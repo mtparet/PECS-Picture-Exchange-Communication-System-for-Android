@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+  xmlns:android="http://schemas.android.com/apk/res/android"
+  android:layout_width="fill_parent" android:layout_height="wrap_content">
+          <open.protto.abba.lib.HorizontialListView android:id="@+id/listView1" android:layout_height="150dp" android:layout_width="fill_parent" android:layout_alignParentTop="true"/>
+    <open.protto.abba.lib.HorizontialListView android:id="@+id/listView2" android:layout_height="150dp" android:layout_width="fill_parent" android:layout_below="@id/listView1"/>
+    
+    <RelativeLayout android:layout_height="wrap_content" android:layout_width="wrap_content" android:id="@+id/relativeLayout1" android:layout_alignParentBottom="true">
+        <Button android:text="Nouveau" android:layout_height="wrap_content" android:layout_width="wrap_content" android:id="@+id/button2" android:onClick="myClickHandler"></Button>
+        <Button android:text="Lire" android:layout_height="wrap_content" android:layout_alignTop="@+id/button2" android:layout_toRightOf="@+id/button2" android:layout_alignBottom="@+id/button2" android:layout_width="wrap_content" android:id="@+id/button1" android:onClick="myClickHandler"></Button>
+    </RelativeLayout>
+</RelativeLayout>
