@@ -9,4 +9,7 @@
         <Button android:text="Nouveau" android:layout_height="wrap_content" android:layout_width="wrap_content" android:id="@+id/button2" android:onClick="myClickHandler"></Button>
         <Button android:text="Lire" android:layout_height="wrap_content" android:layout_alignTop="@+id/button2" android:layout_toRightOf="@+id/button2" android:layout_alignBottom="@+id/button2" android:layout_width="wrap_content" android:id="@+id/button1" android:onClick="myClickHandler"></Button>
     </RelativeLayout>
+            <FrameLayout android:id="@+id/frameLayout1" android:layout_width="wrap_content" android:layout_height="wrap_content" android:visibility="gone">
+                <ImageView android:layout_height="150dp" android:layout_width="150dp" android:id="@+id/imageView1"></ImageView>
+            </FrameLayout>
 </RelativeLayout>

@@ -29,6 +29,7 @@ public class Abba extends Activity {
                  Intent i= new Intent(Abba.this, MainDisplay.class);
                  
                  this.startActivity(i);
+                 finish();
                  
             } else {
                 // missing data, install it
