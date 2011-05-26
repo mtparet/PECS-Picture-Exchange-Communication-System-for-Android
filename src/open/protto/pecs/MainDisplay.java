@@ -1,13 +1,13 @@
-package open.protto.abba;
+package open.protto.pecs;
 
 import java.util.ArrayList;
 import java.util.Locale;
 
-import open.protto.abba.adapter.PictureAdapter;
-import open.protto.abba.adapter.ReceverAdapter;
-import open.protto.abba.data.OnePicture;
-import open.protto.abba.lib.HorizontialListView;
-import open.protto.abba.lib.Lib_common;
+import open.protto.pecs.adapter.PictureAdapter;
+import open.protto.pecs.adapter.ReceverAdapter;
+import open.protto.pecs.data.OnePicture;
+import open.protto.pecs.lib.Lib_common;
+import open.protto.pecs.view.list.HorizontalListView;
 import android.app.Activity;
 import android.os.Bundle;
 import android.speech.tts.TextToSpeech;
@@ -15,13 +15,15 @@ import android.speech.tts.TextToSpeech.OnInitListener;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemLongClickListener;
+import android.widget.HorizontalScrollView;
 import android.widget.ListView;
 import android.widget.AdapterView.OnItemClickListener;
 
 public class MainDisplay extends Activity implements OnInitListener{
 	
-	private HorizontialListView lvPicture;
-	private HorizontialListView lvRecever;
+	private HorizontalListView lvPicture;
+	private HorizontalListView lvRecever;
 	private PictureAdapter pictureAdapter;
 	private ReceverAdapter receverAdapter;
 	private OnePicture onePictureSelected;
@@ -32,8 +34,8 @@ public class MainDisplay extends Activity implements OnInitListener{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main_display);
         
-        lvPicture = (HorizontialListView)findViewById(R.id.listView1);
-        lvRecever = (HorizontialListView)findViewById(R.id.listView2);
+        lvPicture = (HorizontalListView)findViewById(R.id.listView1);
+        lvRecever = (HorizontalListView)findViewById(R.id.listView2);
         
         pictureAdapter = new PictureAdapter(this, 50);
         receverAdapter = new ReceverAdapter(this);
@@ -43,6 +45,7 @@ public class MainDisplay extends Activity implements OnInitListener{
         
         lvPicture.setOnItemClickListener(listenerOnPicture);
         lvRecever.setOnItemClickListener(listenerAddPicture);
+        lvRecever.setOnItemLongClickListener(listenerRemovePicture);
         
         mTts = new TextToSpeech(this, this);
         
@@ -67,6 +70,18 @@ public class MainDisplay extends Activity implements OnInitListener{
 			if(onePictureSelected != null)
 			receverAdapter.addPicture(onePictureSelected, arg2);
 			
+		}
+
+	};
+	
+	private OnItemLongClickListener listenerRemovePicture = new OnItemLongClickListener() {
+
+
+		@Override
+		public boolean onItemLongClick(AdapterView<?> arg0, View arg1,
+				int arg2, long arg3) {
+			receverAdapter.removeItem(arg2);
+			return false;
 		}
 
 	};
@@ -97,7 +112,7 @@ public class MainDisplay extends Activity implements OnInitListener{
 	@Override
 	public void onInit(int arg0) {
             int result = mTts.setLanguage(Locale.FRANCE);
-
+            mTts.setSpeechRate((float) 0.7);
  if (result == TextToSpeech.LANG_MISSING_DATA ||
      result == TextToSpeech.LANG_NOT_SUPPORTED) {
     // Lanuage data is missing or the language is not supported.

@@ -1,4 +1,4 @@
-package open.protto.abba;
+package open.protto.pecs;
 
 import android.app.Activity;
 import android.content.Intent;

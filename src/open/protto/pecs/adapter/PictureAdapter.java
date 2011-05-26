@@ -1,13 +1,16 @@
-package open.protto.abba.adapter;
+package open.protto.pecs.adapter;
 
 import java.util.ArrayList;
 import java.util.zip.Inflater;
 
-import open.protto.abba.R;
-import open.protto.abba.data.OnePicture;
-import open.protto.abba.lib.Lib_common;
+import open.protto.pecs.R;
+import open.protto.pecs.data.OnePicture;
+import open.protto.pecs.lib.Lib_common;
+import open.protto.pecs.view.BallView;
 
 import android.content.Context;
+import android.graphics.Color;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
@@ -48,12 +51,13 @@ public class PictureAdapter extends BaseAdapter {
 	@Override
 	public View getView(int arg0, View arg1, ViewGroup arg2) {
 
-		arg1 = (RelativeLayout)RelativeLayout.inflate(context, open.protto.abba.R.layout.picture_list, null);
-		ImageView iv = (ImageView)arg1.findViewById(R.id.imageView1);
+		arg1 = (RelativeLayout)RelativeLayout.inflate(context, open.protto.pecs.R.layout.picture_recever, null);
+		ImageView iv = (ImageView) arg1.findViewById(R.id.imageView1);
 		iv.setImageDrawable(context.getResources().getDrawable(this.alPicture.get(arg0).getId()));
 		iv.setContentDescription(this.alPicture.get(arg0).getName());
 		
 		return arg1;
 	}
+	
 
 }

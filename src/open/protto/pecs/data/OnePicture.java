@@ -1,4 +1,4 @@
-package open.protto.abba.data;
+package open.protto.pecs.data;
 
 public class OnePicture {
 	
@@ -15,6 +15,11 @@ public class OnePicture {
 		this.name = op.name;
 	}
 	
+	public OnePicture(int id, String name) {
+		this.id = id;
+		this.name = name;
+	}
+
 	public int getId(){
 		return this.id;
 	}

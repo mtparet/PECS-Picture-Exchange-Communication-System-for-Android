@@ -3,5 +3,5 @@
   xmlns:android="http://schemas.android.com/apk/res/android"
   android:layout_width="wrap_content"
   android:layout_height="wrap_content">
-    <ImageView android:id="@+id/imageView1" android:layout_height="150dp" android:layout_width="150dp" android:src="@drawable/icon" android:layout_centerHorizontal="true" android:layout_centerInParent="true" ></ImageView>
+    <ImageView android:id="@+id/imageView1" android:layout_height="100dp" android:layout_width="100dp"   android:layout_centerInParent="true" />
 </RelativeLayout>

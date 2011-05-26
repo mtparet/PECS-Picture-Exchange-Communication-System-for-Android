@@ -1,10 +1,10 @@
-package open.protto.abba.adapter;
+package open.protto.pecs.adapter;
 
 import java.util.ArrayList;
 
-import open.protto.abba.R;
-import open.protto.abba.data.OnePicture;
-import open.protto.abba.lib.Lib_common;
+import open.protto.pecs.R;
+import open.protto.pecs.data.OnePicture;
+import open.protto.pecs.lib.Lib_common;
 import android.content.Context;
 import android.view.View;
 import android.view.ViewGroup;
@@ -39,7 +39,7 @@ public class ReceverAdapter extends BaseAdapter{
 	@Override
 	public long getItemId(int position) {
 		// TODO Auto-generated method stub
-		return 0;
+		return position;
 	}
 
 	@Override
@@ -47,14 +47,15 @@ public class ReceverAdapter extends BaseAdapter{
 		
 			int rest = position % 2;
 			if(rest == 0 ){
-				convertView = (RelativeLayout)RelativeLayout.inflate(context, open.protto.abba.R.layout.picture_list, null);
+				convertView = (RelativeLayout)RelativeLayout.inflate(context, open.protto.pecs.R.layout.picture_recever, null);
 				ImageView iv = (ImageView)convertView.findViewById(R.id.imageView1);
-				iv.setLayoutParams(new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT,LayoutParams.WRAP_CONTENT));
-				iv.setImageDrawable(context.getResources().getDrawable(android.R.drawable.btn_plus));
+				RelativeLayout.LayoutParams rll = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT,LayoutParams.WRAP_CONTENT);
+				iv.setLayoutParams(rll);
+				iv.setImageDrawable(context.getResources().getDrawable(android.R.drawable.ic_menu_add));
 			}else{
 			position = position / 2;
 			
-			convertView = (RelativeLayout)RelativeLayout.inflate(context, open.protto.abba.R.layout.picture_list, null);
+			convertView = (RelativeLayout)RelativeLayout.inflate(context, open.protto.pecs.R.layout.picture_list, null);
 			ImageView iv = (ImageView)convertView.findViewById(R.id.imageView1);
 			iv.setImageDrawable(context.getResources().getDrawable(this.alPicture.get(position).getId()));
 			
@@ -64,7 +65,8 @@ public class ReceverAdapter extends BaseAdapter{
 	}
 	
 	public void addPicture(OnePicture op, int position){
-		if(position < alPicture.size()){
+		if(position < nb){
+			position = (position)/2;
 			alPicture.add(position, op);
 		}else{
 			alPicture.add(op);
@@ -72,6 +74,15 @@ public class ReceverAdapter extends BaseAdapter{
 		
 		nb = alPicture.size() * 2 + 1;
 		notifyDataSetChanged();
+	}
+	
+	public void removeItem(int arg1){
+		int rest = arg1 % 2;
+		if(rest != 0){
+			alPicture.remove((arg1-1)/2);
+			nb = alPicture.size() * 2 + 1;
+			notifyDataSetChanged();
+		}
 	}
 	
 	public void clear(){
