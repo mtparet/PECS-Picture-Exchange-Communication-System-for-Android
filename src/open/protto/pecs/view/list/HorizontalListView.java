@@ -45,7 +45,6 @@ import android.widget.Scroller;
 
 public class HorizontalListView extends AdapterView<ListAdapter>{
 
-	private boolean onMove = false;
 	public boolean mAlwaysOverrideTouch = true;
 	protected ListAdapter mAdapter;
 	private int mLeftViewIndex = -1;
@@ -59,13 +58,12 @@ public class HorizontalListView extends AdapterView<ListAdapter>{
 	private Queue<View> mRemovedViewQueue = new LinkedList<View>();
 	private OnItemSelectedListener mOnItemSelected;
 	private OnItemClickListener mOnItemClicked;
-	private OnTouchListener mOnItemOutListener;
+	private OnTouchListener mOnItemOutUpListener;
 	private OnItemLongClickListener mOnItemLongClickListener;
 	private OnTouchListener mOnItemMoveListener; //It is an hacked touchLister, in fact it is OnMoveListener
-	private boolean isMove = false;
+	private OnItemClickListener mOnItemReceiver;
 	private boolean mDataChanged = false;
-	private boolean getEvent = false;
-	private boolean receive = false;
+	private boolean isMove = false;
 
 
 
@@ -104,10 +102,14 @@ public class HorizontalListView extends AdapterView<ListAdapter>{
 		mOnItemMoveListener = listener;
 	}
 
-	public void setOnItemOutListener(AdapterView.OnTouchListener listener){
-		this.mOnItemOutListener = listener;
+	public void setOnItemUpOutListener(AdapterView.OnTouchListener listener){
+		this.mOnItemOutUpListener = listener;
 	}
-	
+
+	public void setOnItemReceiverListener(AdapterView.OnItemClickListener listener){
+		this.mOnItemReceiver = listener;
+	}
+
 	private DataSetObserver mDataObserver = new DataSetObserver() {
 
 		@Override
@@ -303,43 +305,27 @@ public class HorizontalListView extends AdapterView<ListAdapter>{
 	}
 
 	@Override
-	public boolean dispatchTouchEvent(MotionEvent ev) {
+	public boolean onTouchEvent(MotionEvent ev){
 		boolean handled = false;
-		
 
-		if(onMove)
-			handled = onTestMove(ev);
-		
-		if(getEvent){
-			handled = mOnItemMoveListener.onTouch(getEmptyView(), ev);
-		}else{
+
+		if(mOnItemReceiver != null)
+			handled = onUpReceive(ev);
+
+		if(mOnItemMoveListener != null && !handled)
+			handled = onMove(ev);
+
+		if(!handled)
 			handled = mGesture.onTouchEvent(ev);
-		}
 
 		return handled;
-	}
-	
-	public void setGetEvent(boolean getEvent){
-		this.getEvent = getEvent;
-	}
-	
-	public void setReceive(boolean receive){
-		this.receive = receive;
-	}
-
-	@Override
-	public boolean onTouchEvent(MotionEvent ev){
-		
-		if(receive)
-		 onTestReceive(ev);
-			
-		return false;
 
 	}
 
 	protected boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX,
 			float velocityY) {
 
+		
 		synchronized(HorizontalListView.this){
 			mScroller.fling(mNextX, 0, (int)-velocityX, 0, 0, mMaxX, 0, 0);
 		}
@@ -433,105 +419,163 @@ public class HorizontalListView extends AdapterView<ListAdapter>{
 
 	};
 	private View childSelected;
+	private boolean isSelectedItem = false;
+	private float xInit;
+	private float yInit;
 
 
-	public boolean onTestMove(MotionEvent event) {
+	public boolean onMove(MotionEvent event) {
 
-		float xInit = event.getHistoricalX(0);
-		float yInit = event.getHistoricalY(0);
+
 
 		float xNow = event.getX();
 		float yNow = event.getY();
 
-
-		
 		Rect viewRect = new Rect();
-		if(!isMove){
-		for(int i=0;i<getChildCount();i++){
-			View child = getChildAt(i);
-			int left = child.getLeft();
-			int right = child.getRight();
-			int top = child.getTop();
-			int bottom = child.getBottom();
-			viewRect.set(left, top, right, bottom);
-			if(viewRect.contains((int)xInit, (int)yInit)){
-					if(yNow > yInit ){
 
-						Log.d("relache", "passé in ");
-						if(mOnItemMoveListener != null){
-							mOnItemMoveListener.onTouch(child, event);
-							this.childSelected = child;
-						}
-						
-						if(mOnItemClicked != null){
-							mOnItemClicked.onItemClick(HorizontalListView.this, child, mLeftViewIndex + 1 + i, mAdapter.getItemId( mLeftViewIndex + 1 + i ));
-						}
+		if(event.getAction() == MotionEvent.ACTION_DOWN){
+			float xInit1 = event.getX();
+			float yInit1 = event.getY();
+			
+			for(int i=0;i<getChildCount();i++){
+				View child = getChildAt(i);
+				int left = child.getLeft();
+				int right = child.getRight();
+				int top = child.getTop();
+				int bottom = child.getBottom();
+				viewRect.set(left, top, right, bottom);
+				if(viewRect.contains((int)xInit1, (int)yInit1)){
 
-						isMove = true;
-						return true;
-
+					if(mOnItemSelected != null){
+						mOnItemSelected.onItemSelected(HorizontalListView.this, child, mLeftViewIndex + 1 + i, mAdapter.getItemId( mLeftViewIndex + 1 + i ));
 					}
+					
+					this.xInit = xInit1;
+					this.yInit = yInit1;
+					
+					childSelected = child;
+					isSelectedItem = true;
+
+
 				}
-
 			}
-		}else{
-			mOnItemMoveListener.onTouch(childSelected, event);
-			
-			if(event.getAction() == MotionEvent.ACTION_UP){
-				int left = this.getLeft();
-				int right = this.getRight();
-				int top = this.getTop();
-				int bottom = this.getBottom();
-				Rect rect = new Rect(left, top, right, bottom);
-				
-					if(!rect.contains((int)xNow, (int)yNow)){
-						
-						if(mOnItemOutListener != null){
-							mOnItemOutListener.onTouch(this.childSelected, event);
-						}
-					}
-				
-				isMove = false;
-				return false;
-			}
-			
-			return true;
 		}
-		
-		return false;
-	}
-	
-	public boolean onTestReceive(MotionEvent e) {
-			
-			if(e.getAction() == MotionEvent.ACTION_UP){
-				Rect viewRect = new Rect();
-				for(int i=0;i<getChildCount();i++){
-					View child = getChildAt(i);
-					int left = child.getLeft();
-					int right = child.getRight();
-					int top = child.getTop() + this.getTop();
-					int bottom = child.getBottom() + this.getBottom();
-					int x = (int)e.getX();
-					int y = (int)e.getY();
-					viewRect.set(left, top, right, bottom);
-					if(viewRect.contains(x,y)){
-						if(mOnItemClicked != null){
-							mOnItemClicked.onItemClick(HorizontalListView.this, child, mLeftViewIndex + 1 + i, mAdapter.getItemId( mLeftViewIndex + 1 + i ));
-						}
-						if(mOnItemSelected != null){
-							mOnItemSelected.onItemSelected(HorizontalListView.this, child, mLeftViewIndex + 1 + i, mAdapter.getItemId( mLeftViewIndex + 1 + i ));
-						}
-						break;
+
+		if(event.getAction() == MotionEvent.ACTION_MOVE){
+
+			if(!isMove){
+
+				if( Math.abs(yNow -yInit) > 0 && Math.abs(xNow - xInit) < 2){
+
+					if(mOnItemMoveListener != null){
+						mOnItemMoveListener.onTouch(childSelected, event);
 					}
 
+					isMove = true;
+					return true;
+
 				}
+
+			}else{
+				Log.d("relache", "passÔøΩ in 2");
+				mOnItemMoveListener.onTouch(childSelected, event);
+
 				return true;
 			}
+		}
+
+		if(event.getAction() == MotionEvent.ACTION_UP && isMove){
+			int left = this.getLeft();
+			int right = this.getRight();
+			int top = this.getTop();
+			int bottom = this.getBottom();
+			Rect rect = new Rect(left, top, right, bottom);
+			
+			if(mOnItemMoveListener != null){
+				mOnItemMoveListener.onTouch(childSelected, event);
+			}
+
+			if(!rect.contains((int)xNow, (int)yNow)){
+				
+				if(mOnItemOutUpListener != null){
+					mOnItemOutUpListener.onTouch(this.childSelected, event);
+				}
+
+			}
+
+			isMove = false;
 			return false;
+		}
+
+		return false;
 	}
 
+	/**
+	 * 
+	 * @param e
+	 * @return
+	 */
+	public boolean onUpReceive(MotionEvent e) {
 
-	public void setOnMove(Boolean onMoveListener){
-		this.onMove = true;
+		if(e.getAction() == MotionEvent.ACTION_UP){
+			Rect viewRect = new Rect();
+			int x = (int)e.getX();
+			int y = (int)e.getY();
+
+			for(int i=0;i<getChildCount();i++){
+				View child = getChildAt(i);
+				int left = child.getLeft();
+				int right = child.getRight();
+				int top = child.getTop() + this.getTop();
+				int bottom = child.getBottom() + this.getBottom();
+				viewRect.set(left, top, right, bottom);
+				if(viewRect.contains(x,y)){
+					if(mOnItemSelected != null){
+						mOnItemSelected.onItemSelected(HorizontalListView.this, child, mLeftViewIndex + 1 + i, mAdapter.getItemId( mLeftViewIndex + 1 + i ));
+					}
+					if(mOnItemReceiver != null){
+						mOnItemReceiver.onItemClick(HorizontalListView.this, child, mLeftViewIndex + 1 + i, mAdapter.getItemId( mLeftViewIndex + 1 + i ));
+					}
+					return true;
+				}
+
+			}
+
+			int left = this.getLeft();
+			int right = this.getRight();
+			int top = this.getTop();
+			int bottom = this.getBottom();
+			Rect rect = new Rect(left, top, right, bottom);
+
+			if(rect.contains(x,y)){
+
+				if(this.getChildCount() > 0){
+					int maxX = this.getChildAt(this.getChildCount() - 1).getRight();
+					int minX = this.getChildAt(0).getRight();
+
+					if(x < minX){
+						mOnItemReceiver.onItemClick(HorizontalListView.this, null, 0, 0);
+					}else{
+						if(x > maxX){
+							mOnItemReceiver.onItemClick(HorizontalListView.this, null, this.getChildCount() - 1, 0);
+						}
+
+					}
+
+					return true;
+
+				}else{
+
+					if(mOnItemReceiver != null){
+						mOnItemReceiver.onItemClick(HorizontalListView.this, null, 0, 0);
+					}
+					return true;
+				}
+
+			}
+
+
+		}
+		return false;
 	}
 }

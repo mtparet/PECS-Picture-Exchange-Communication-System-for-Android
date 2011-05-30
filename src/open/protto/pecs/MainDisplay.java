@@ -1,3 +1,22 @@
+/*
+*Copyright 2011 Matthieu Paret
+*
+*This file is part of PECS.
+*
+*PECS is free software: you can redistribute it and/or modify
+*it under the terms of the GNU Lesser General Public License as published by
+*the Free Software Foundation, either version 3 of the License, or
+*(at your option) any later version.
+*
+*PECS is distributed in the hope that it will be useful,
+*but WITHOUT ANY WARRANTY; without even the implied warranty of
+*MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+*GNU General Public License for more details.
+*
+*You should have received a copy of the GNU Lesser General Public License
+*along with PECS.  If not, see <http://www.gnu.org/licenses/>.
+*/
+
 package open.protto.pecs;
 
 import java.util.ArrayList;
@@ -57,23 +76,46 @@ public class MainDisplay extends Activity implements OnInitListener{
 		receverAdapter = new ReceverAdapter(this);
 
 		lvPicture.setAdapter(pictureAdapter);
-		lvPicture.setOnMove(true);
 		
 		lvRecever.setAdapter(receverAdapter);
 
 		lvPicture.setOnItemClickListener(listenerOnPicture);
+		lvPicture.setOnItemSelectedListener(mOnItemSelectedListener);
 		lvPicture.setOnItemMoveListener(listenerMoveOnTouch);
-		lvPicture.setOnItemOutListener(listenerOut);
+		lvPicture.setOnItemUpOutListener(listenerOut);
 		
-		lvRecever.setReceive(true);
 		lvRecever.setOnItemClickListener(listenerAddPicture);
 		lvRecever.setOnItemLongClickListener(listenerRemovePicture);
+		lvRecever.setOnItemReceiverListener(listenerOnReceive);
 
 		mTts = new TextToSpeech(this, this);
 
 
 
 	}
+	
+    /**
+     * Save selected item
+     */
+    private AdapterView.OnItemSelectedListener mOnItemSelectedListener = new AdapterView.OnItemSelectedListener() {
+
+		@Override
+		public void onItemSelected(AdapterView<?> arg0, View arg1, int arg2,
+				long arg3) {
+			
+			/**
+			 * retrieve selected item from adapterview
+			 */
+			onePictureSelected = (OnePicture) arg0.getItemAtPosition(arg2);
+			
+		}
+
+		@Override
+		public void onNothingSelected(AdapterView<?> arg0) {
+			// TODO Auto-generated method stub
+			
+		}
+    };
 
 	private OnItemClickListener listenerOnPicture = new OnItemClickListener() {
 
@@ -98,6 +140,17 @@ public class MainDisplay extends Activity implements OnInitListener{
 	};
 
 	private OnItemClickListener listenerAddPicture = new OnItemClickListener() {
+
+		public void onItemClick(AdapterView<?> arg0, View arg1, int arg2,
+				long arg3) {
+			if(onePictureSelected != null)
+				receverAdapter.addPicture(onePictureSelected, arg2);
+
+		}
+
+	};
+	
+	private OnItemClickListener listenerOnReceive = new OnItemClickListener() {
 
 		public void onItemClick(AdapterView<?> arg0, View arg1, int arg2,
 				long arg3) {
@@ -164,8 +217,7 @@ public class MainDisplay extends Activity implements OnInitListener{
 		public boolean onTouch(View v, MotionEvent event) {
 			RelativeLayout.LayoutParams layout = (RelativeLayout.LayoutParams) frameLayout.getLayoutParams();
 
-			ImageView iv = (ImageView) v.findViewById(R.id.imageView1);
-			imageView1.setImageDrawable(iv.getDrawable());
+			imageView1.setImageDrawable(context.getResources().getDrawable(onePictureSelected.getId()));
 			
 			frameLayout.setVisibility(View.VISIBLE);
 			

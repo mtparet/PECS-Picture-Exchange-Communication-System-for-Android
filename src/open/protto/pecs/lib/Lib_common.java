@@ -1,3 +1,22 @@
+/*
+*Copyright 2011 Matthieu Paret
+*
+*This file is part of PECS.
+*
+*PECS is free software: you can redistribute it and/or modify
+*it under the terms of the GNU Lesser General Public License as published by
+*the Free Software Foundation, either version 3 of the License, or
+*(at your option) any later version.
+*
+*PECS is distributed in the hope that it will be useful,
+*but WITHOUT ANY WARRANTY; without even the implied warranty of
+*MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+*GNU General Public License for more details.
+*
+*You should have received a copy of the GNU Lesser General Public License
+*along with PECS.  If not, see <http://www.gnu.org/licenses/>.
+*/
+
 package open.protto.pecs.lib;
 
 import java.util.ArrayList;
@@ -26,7 +45,7 @@ public class Lib_common {
 			OnePicture op3 = new OnePicture(open.protto.pecs.R.drawable.dort, "dort");
 			al.add(op3);
 			
-			OnePicture op4 = new OnePicture(open.protto.pecs.R.drawable.garcon, "garcon");
+			OnePicture op4 = new OnePicture(open.protto.pecs.R.drawable.garcon, "garçon");
 			al.add(op4);
 			
 			OnePicture op5 = new OnePicture(open.protto.pecs.R.drawable.le, "le");
@@ -51,7 +70,7 @@ public class Lib_common {
 
 		String textToSpeach = "";
 		for(int i = 0; i < al.size(); i ++){
-			textToSpeach = textToSpeach + al.get(i);
+			textToSpeach = textToSpeach + " " + al.get(i);
 		}
 		
 		mTts.speak(textToSpeach, TextToSpeech.QUEUE_FLUSH, null);
